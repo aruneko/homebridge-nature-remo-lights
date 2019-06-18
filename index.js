@@ -1,14 +1,12 @@
 const request = require('request-promise-native');
 
-let Accessory, Service, Characteristic, UUIDGen;
+let Service, Characteristic;
 
 const BASE_URL = 'https://api.nature.global';
 
 module.exports = homebridge => {
-  Accessory = homebridge.platformAccessory;
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
-  UUIDGen = homebridge.hap.uuid;
 
   homebridge.registerAccessory(
     'homebridge-nature-remo-lights',
@@ -32,53 +30,44 @@ class NatureRemoLightDevice {
     }
   }
 
-  async getLightDevices() {
+  getServices() {
+    const informationService = new Service.AccessoryInformation()
+      .setCharacteristic(Characteristic.Manufacturer, 'Nature, Inc.')
+      .setCharacteristic(Characteristic.Model, 'NatureRemo')
+      .setCharacteristic(Characteristic.SerialNumber, 'nature-remo');
+
+    const lightBulbs = new Service.Lightbulb(this.config.name);
+    lightBulbs
+      .getCharacteristic(Characteristic.On)
+      .on('get', this.getOnCharacteristicHandler.bind(this))
+      .on('set', this.setOnCharacteristicHandler.bind(this));
+
+    return [informationService].concat(lightBulbs);
+  }
+
+  async getOnCharacteristicHandler(callback) {
     const options = {
       url: `${BASE_URL}/1/appliances`,
       headers: {
-        Authorization: `Bearer ${this.config.token}`,
+        Authorization: `Bearer ${this.config.accessToken}`,
       },
     };
     const responses = await request(options);
-    return responses.filter(response => response.type === 'LIGHT');
+    const state =
+      responses.filter(res => res.id === this.config.id)[0].light.state
+        .power === 'on';
+    callback(null, state);
   }
 
-  addAccessory(device) {
-    const uuid = UUIDGen.generate(device.nickname);
-
-    const newDevice = new Accessory(device.nickname, uuid);
-    newDevice
-      .addService(Service.Lightbulb, device.nickname)
-      .getCharacteristic(Characteristic.On)
-      .on('set', async value => {
-        const options = {
-          method: 'POST',
-          url: `${BASE_URL}/1/appliances/${device.id}/light`,
-          form: {
-            button: value ? 'on' : 'off',
-          },
-        };
-        await request(options);
-      })
-      .on('get', async () => {
-        const devices = await this.getLightDevices();
-        let state = false;
-        devices
-          .filter(d => d.id === device.id)
-          .forEach(d => {
-            state = d.light.state.power === 'on';
-          });
-        return state;
-      });
-    return newDevice;
-  }
-
-  addAccessories() {
-    const lightDevices = [];
-    this.getLightDevices().then(devices =>
-      devices.forEach(device => lightDevices.push(device))
-    );
-
-    lightDevices.map(device => this.addAccessory(device));
+  async setOnCharacteristicHandler(value, callback) {
+    const options = {
+      method: 'POST',
+      url: `${BASE_URL}/1/appliances/${this.config.id}/light`,
+      form: {
+        button: value ? 'on' : 'off',
+      },
+    };
+    await request(options);
+    callback(null);
   }
 }
