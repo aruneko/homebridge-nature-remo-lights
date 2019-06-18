@@ -10,11 +10,10 @@ module.exports = homebridge => {
   Characteristic = homebridge.hap.Characteristic;
   UUIDGen = homebridge.hap.uuid;
 
-  homebridge.registerPlatform(
+  homebridge.registerAccessory(
     'homebridge-nature-remo-lights',
     'NatureRemoLightDevice',
-    NatureRemoLightDevice,
-    true
+    NatureRemoLightDevice
   );
 };
 
