@@ -34,13 +34,13 @@ class NatureRemoLightDevice {
       .setCharacteristic(Characteristic.Model, 'NatureRemo')
       .setCharacteristic(Characteristic.SerialNumber, 'nature-remo');
 
-    const lightBulbs = new Service.Lightbulb(this.config.name);
-    lightBulbs
+    const lightBulb = new Service.Lightbulb(this.config.name);
+    lightBulb
       .getCharacteristic(Characteristic.On)
       .on('get', this.getOnCharacteristicHandler.bind(this))
       .on('set', this.setOnCharacteristicHandler.bind(this));
 
-    return [informationService].concat(lightBulbs);
+    return [informationService, lightBulb];
   }
 
   async getOnCharacteristicHandler(callback) {
