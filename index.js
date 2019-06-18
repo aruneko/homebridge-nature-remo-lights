@@ -22,7 +22,8 @@ class NatureRemoLightDevice {
   constructor(log, config, api) {
     this.log = log;
     this.config = config;
-    this.accessories = [];
+
+    this.addAccessories();
 
     if (api) {
       this.api = api;
@@ -30,7 +31,6 @@ class NatureRemoLightDevice {
         this.log('DidFinishLaunching');
       });
     }
-    this.addAccessories();
   }
 
   async getLightDevices() {
@@ -80,6 +80,6 @@ class NatureRemoLightDevice {
       devices.forEach(device => lightDevices.push(device))
     );
 
-    this.accessories = lightDevices.map(device => this.addAccessory(device));
+    lightDevices.map(device => this.addAccessory(device));
   }
 }
