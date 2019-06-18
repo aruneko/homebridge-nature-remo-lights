@@ -20,8 +20,6 @@ class NatureRemoLightDevice {
     this.log = log;
     this.config = config;
 
-    this.addAccessories();
-
     if (api) {
       this.api = api;
       this.api.on('didFinishLaunching', () => {
