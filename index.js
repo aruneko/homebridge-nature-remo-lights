@@ -51,9 +51,8 @@ class NatureRemoLightDevice {
       },
     };
     const responses = await request(options);
-    const state =
-      responses.filter(res => res.id === this.config.id)[0].light.state
-        .power === 'on';
+    const device = responses.filter(res => res.id === this.config.id)[0];
+    const state = device.light.state.power === 'on';
     callback(null, state);
   }
 
@@ -63,6 +62,9 @@ class NatureRemoLightDevice {
       url: `${BASE_URL}/1/appliances/${this.config.id}/light`,
       form: {
         button: value ? 'on' : 'off',
+      },
+      headers: {
+        Authorization: `Bearer ${this.config.accessToken}`,
       },
     };
     await request(options);
