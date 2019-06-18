@@ -6,7 +6,9 @@ NatureRemoに登録された照明機器を操作するためのHomebridge用プ
 頑張ってnpmで入れてください。
 
 ## configの書き方
-`accessories` に書き加えます。下記説明に注意しながら記入してください。複数のデバイスがある場合にはそのまま複数登録してください。
+`accessories` に書き加えます。下記説明に注意しながら記入してください。
+
+複数のデバイスがある場合にはそのまま複数登録してください。
 
 - `accessory` は `NatureRemoLightDevice` で固定です。
 - `accessToken` は [公式サイト](https://home.nature.global/)から発行してください。
@@ -27,7 +29,7 @@ NatureRemoに登録された照明機器を操作するためのHomebridge用プ
       "accessToken": "SECRET_TOKEN",
       "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
       "name": "寝室の電気"
-    },
+  },
 ]
 ```
 
