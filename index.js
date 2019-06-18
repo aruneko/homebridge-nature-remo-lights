@@ -53,8 +53,9 @@ class NatureRemoLightDevice {
     let state = false;
     try {
       const responses = await request(options);
-      this.log(responses);
-      const device = responses.filter(res => res.id === this.config.id)[0];
+      const device = JSON.parse(responses).filter(
+        res => res.id === this.config.id
+      )[0];
       state = device.light.state.power === 'on';
     } catch (e) {
       this.log(e);
